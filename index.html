@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>.</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      overflow: hidden;
+      background: transparent;
+    }
+
+    #bgVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+      opacity: 0;
+      filter: blur(10px) scale(1.1);
+      pointer-events: none;
+    }
+
+    .bg-show {
+      animation: backgroundReveal 2s ease-out forwards;
+    }
+
+    @keyframes backgroundReveal {
+      0% {
+        opacity: 0;
+        filter: blur(10px) brightness(0.6) scale(1.1);
+      }
+      50% {
+        opacity: 0.5;
+        filter: blur(6px) brightness(0.8) scale(1.05);
+      }
+      100% {
+        opacity: 1;
+        filter: blur(0) brightness(1) scale(1);
+      }
+    }
+
+    .container {
+      text-align: center;
+      padding: 0 1rem;
+      max-width: 400px;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+
+    #message {
+      font-size: 24px;
+      margin-bottom: 20px;
+      line-height: 1.3;
+      transition: transform 1s ease, filter 1s ease, opacity 1s ease;
+      color: black;
+    }
+
+    .text-reveal {
+      animation: textSmoothIn 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes textSmoothIn {
+      0% { transform: translateY(25px) scale(0.92); opacity: 0; }
+      60% { transform: translateY(-5px) scale(1.04); opacity: 1; }
+      100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .slide-up-blur {
+      animation: slideUpBlur 1s ease forwards;
+    }
+
+    @keyframes slideUpBlur {
+      0% { transform: translateY(0); filter: blur(3px); opacity: 0.7; }
+      50% { filter: blur(1.5px); opacity: 0.85; }
+      100% { transform: translateY(-60px); filter: blur(0); opacity: 1; }
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 18px;
+      background: #ccc;
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      width: 100%;
+      max-width: 320px;
+      margin: 0 auto;
+      display: block;
+      animation: pulse 1.8s infinite;
+    }
+
+    button:hover { transform: scale(1.05); }
+
+    @keyframes pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.4); }
+      70% { transform: scale(1.08); box-shadow: 0 0 0 10px rgba(0, 0, 0, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 0, 0, 0); }
+    }
+
+    #popupVideo {
+      opacity: 0;
+      transform: scale(0);
+      width: 320px;
+      max-width: 100%;
+      height: 180px;
+      margin: 20px auto 0;
+      display: block;
+      pointer-events: none;
+      border-radius: 12px;
+      transition: all 1s ease;
+      object-fit: cover;
+      background: transparent;
+    }
+
+    .show {
+      animation: smoothPopShake 1s ease-out forwards;
+      pointer-events: auto;
+    }
+
+    @keyframes smoothPopShake {
+      0% { transform: scale(0.6); opacity: 0; }
+      40% { transform: scale(1.2); opacity: 1; }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .bounce-out {
+      animation: bounceOut 0.6s ease-in forwards;
+    }
+
+    @keyframes bounceOut {
+      0% { transform: scale(1); opacity: 1; }
+      30% { transform: scale(1.1); opacity: 0.8; }
+      100% { transform: scale(0.4); opacity: 0; }
+    }
+
+    .bounce-in-again {
+      animation: flickBounceIn 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes flickBounceIn {
+      0% { transform: scale(0); opacity: 0; }
+      25% { transform: scale(1.25); opacity: 1; }
+      50% { transform: scale(0.9); }
+      75% { transform: scale(1.15); }
+      100% { transform: scale(1.5); opacity: 1; }
+    }
+
+    #videoError {
+      color: #ff4d4d;
+      margin-top: 12px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 400px) {
+      #message { font-size: 20px; }
+      button { font-size: 16px; padding: 10px 20px; }
+      #popupVideo { height: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+  <video id="bgVideo" muted autoplay playsinline preload="auto">
+    <source src="brizz.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="container">
+    <div id="message">Alam mo pwede tayong di-kuryente eh</div>
+    <button id="startBtn">Bakit?</button>
+    <video id="popupVideo" preload="auto" playsinline>
+      <source src="rizz.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <p id="videoError" style="display: none;">Failed to load video. Please check the file path.</p>
+  </div>
+
+  <script>
+    const btn = document.getElementById('startBtn');
+    const msg = document.getElementById('message');
+    const popupVideo = document.getElementById('popupVideo');
+    const bgVideo = document.getElementById('bgVideo');
+    const videoError = document.getElementById('videoError');
+
+    const waitForLoad = (vid) => {
+      return new Promise(resolve => {
+        if (vid.readyState >= 3) resolve();
+        else vid.addEventListener("canplaythrough", resolve, { once: true });
+      });
+    };
+
+    popupVideo.onerror = () => {
+      videoError.style.display = "block";
+      videoError.textContent = "Failed to load popup video.";
+    };
+
+    bgVideo.onerror = () => {
+      console.error("Background video failed to load.");
+    };
+
+    btn.addEventListener('click', async () => {
+      btn.style.animation = 'none'; // Stop pulsing after click
+      msg.textContent = "Kumbaga ikaw yung outlet, at yung plug ko nalang kulang ipasok para gumana";
+      msg.classList.add('text-reveal');
+      btn.style.display = "none";
+
+      await waitForLoad(popupVideo);
+      popupVideo.muted = false;
+      popupVideo.volume = 1;
+
+      setTimeout(() => {
+        msg.classList.add('slide-up-blur');
+        popupVideo.classList.add('show');
+        popupVideo.play().catch(e => {
+          console.error("Popup video failed to play:", e);
+          videoError.style.display = "block";
+        });
+
+        setTimeout(() => {
+          popupVideo.classList.remove('show');
+          popupVideo.classList.add('bounce-out');
+
+          setTimeout(() => {
+            popupVideo.classList.remove('bounce-out');
+            popupVideo.classList.add('bounce-in-again');
+
+            setTimeout(async () => {
+              popupVideo.style.opacity = "1";
+              popupVideo.style.transform = "scale(1.5)";
+              popupVideo.className = "";
+
+              await waitForLoad(bgVideo);
+              bgVideo.currentTime = popupVideo.currentTime;
+              bgVideo.classList.add("bg-show");
+              bgVideo.play().catch(err => {
+                console.error("Background video failed to play:", err);
+              });
+
+            }, 1200);
+          }, 600);
+        }, 4580);
+      }, 4900);
+    });
+  </script>
+
+</body>
+</html>
